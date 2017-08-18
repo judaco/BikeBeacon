@@ -1,4 +1,4 @@
-package com.bikebeacon;
+package com.bikebeacon.ui;
 
 import android.Manifest;
 import android.content.Intent;

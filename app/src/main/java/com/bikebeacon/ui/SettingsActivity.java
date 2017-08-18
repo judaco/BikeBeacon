@@ -1,4 +1,4 @@
-package com.bikebeacon;
+package com.bikebeacon.ui;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
