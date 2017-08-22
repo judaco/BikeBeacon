@@ -18,6 +18,11 @@ public final class Constants {
     public static final String ALERT_DELTE = "deleteAlert";
     public static final String ALERT_UPDATE = "updateAlert";
 
+    public static final String FCM_RESPONSE = "response";
+    public static final String FCM_URL = "trackDownloadURL";
+
+    public static final String FCM_RECEIVED_RESPONSE = "com.bikebeacon.GOT_RESPONSE";
+
     public enum AlertAction {
         ALERT_NEW("newAlert"),
         ALERT_CONVERSATION_RECEIVED("conversationStarted"),

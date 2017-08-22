@@ -43,6 +43,11 @@ dependencies {
 
     //HTTP Ops
     compile 'com.squareup.okhttp3:okhttp:3.8.1'
+    compile 'com.ibm.watson.developer_cloud:java-sdk:3.8.0'
+
+    //Fuck my life
+    compile 'com.google.android.exoplayer:exoplayer:r2.5.1'
+    compile 'com.devbrackets.android:exomedia:4.0.3'
 
 
 
