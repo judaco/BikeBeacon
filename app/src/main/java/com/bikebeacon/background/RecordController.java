@@ -3,14 +3,22 @@ package com.bikebeacon.background;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.media.MediaRecorder;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.bikebeacon.pojo.RecordingDoneCallback;
 import com.bikebeacon.ui.RecordingDialogFragment;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+
+import static com.bikebeacon.background.Constants.RESPONSE_INPUT;
+import static com.bikebeacon.background.Constants.RESPONSE_OUTPUT;
 import static com.bikebeacon.background.GeneralUtility.getExternalStorageDir;
 
 /**
@@ -63,5 +71,28 @@ public class RecordController implements RecordingDoneCallback {
         //TODO: send to server to be converted to mp3 and then use the speech to text service to answer jerry.
         mRecordDialog.dismiss();
         mRecorder.stop();
+        try {
+            NetworkDispatcher.getDispatcher().createRequest()
+                    .timeout(30)
+                    .url(NetworkDispatcher.URL_TYPES.CONVERSION.toStringWithParams(RESPONSE_OUTPUT  +"=" + "mp3", RESPONSE_INPUT + "=" + "3gp"))
+                    .body(new FileInputStream(mOutputFile))
+                    .method("POST")
+                    .build()
+                    .execute(new Callback() {
+                        @Override
+                        public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        @Override
+                        public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                            if (response.code() != 200) {
+                                Log.e("RecordController", "onResponse: Failed " + response.toString());
+                            }
+                        }
+                    });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

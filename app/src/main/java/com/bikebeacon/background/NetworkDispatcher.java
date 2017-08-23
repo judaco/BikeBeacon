@@ -3,6 +3,7 @@ package com.bikebeacon.background;
 import android.support.annotation.Nullable;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
@@ -38,6 +39,7 @@ public final class NetworkDispatcher {
     public enum URL_TYPES {
         ALERT("/alert_api"),
         FILE("/jerry_api"),
+        CONVERSION("/response_api"),
         TOKEN("/token_api");
 
         private String URL;
@@ -48,15 +50,26 @@ public final class NetworkDispatcher {
 
         @Override
         public String toString() {
-            return (mIsEmulator ? "http://10.0.0.2:8080" : "http://10.0.0.2:75") + URL;
+            return (mIsEmulator ? "http://10.0.0.2:8080" : "http://10.0.24.43:75") + URL;
+        }
+
+        public String toStringWithParams(String... params) {
+            StringBuilder builder = new StringBuilder();
+            builder.append(toString()).append("?").append(params[0]);
+            for (int i = 1; i < params.length; i++) {
+                String param = params[i];
+                builder.append("&").append(param);
+            }
+            return builder.toString();
         }
     }
 
     public class NetworkRequestBuilder {
 
         private URL mURL;
-        private byte[] mInformation;
         private String mHTTPMethod;
+        private InputStream mBodyInput;
+        private byte[] mInformation;
         private int timeout;
 
         private Request mRequest;
@@ -91,6 +104,11 @@ public final class NetworkDispatcher {
             return this;
         }
 
+        public NetworkRequestBuilder body(InputStream stream) {
+            mBodyInput = stream;
+            return this;
+        }
+
         public NetworkRequestBuilder timeout(int seconds) {
             timeout = seconds;
             return this;
@@ -106,7 +124,14 @@ public final class NetworkDispatcher {
 
                 @Override
                 public void writeTo(BufferedSink sink) throws IOException {
-                    sink.write(mInformation);
+                    if (mInformation != null)
+                        sink.write(mInformation);
+                    else if (mBodyInput != null) {
+                        byte[] buffer = new byte[1024];
+
+                        while (mBodyInput.read(buffer) != -1)
+                            sink.write(buffer);
+                    }
                 }
             }).build();
             return this;

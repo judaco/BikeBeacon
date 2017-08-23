@@ -15,11 +15,8 @@ import com.bikebeacon.pojo.RecordingDoneCallback;
 import java.util.Timer;
 import java.util.TimerTask;
 
-/**
- * Created by Alon on 8/22/2017.
- */
 
-public class RecordingDialogFragment extends DialogFragment {
+public class RecordingDialogFragment extends DialogFragment implements View.OnClickListener {
 
     private int mTimeLeft = 30;
     private TextView mTitle;
@@ -32,6 +29,7 @@ public class RecordingDialogFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.recording_dialog, container, false);
         mTitle = view.findViewById(R.id.record_dialog_title);
+        view.findViewById(R.id.btn_stop_recording).setOnClickListener(this);
         mExecutionTimer = new Timer();
         mExecutionTimer.schedule(new UpdateTask(), 0);
         return view;
@@ -41,11 +39,25 @@ public class RecordingDialogFragment extends DialogFragment {
         this.mStopListener = mStopListener;
     }
 
+    public void stopRecording() {
+        if (mStopListener != null)
+            mStopListener.onDone();
+        else
+            Log.e("ABC", "run: No RecordingDoneCallback set.");
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (view.getId() == R.id.btn_stop_recording)
+            stopRecording();
+    }
+
     private class UpdateTask extends TimerTask {
 
         @Override
         public void run() {
-
+            while (!RecordingDialogFragment.this.isVisible()) {
+            }
             RecordingDialogFragment.this.getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -56,12 +68,8 @@ public class RecordingDialogFragment extends DialogFragment {
             });
             if (mTimeLeft > 0)
                 mExecutionTimer.schedule(new UpdateTask(), 1000);
-            else {
-                if (mStopListener != null)
-                    mStopListener.onDone();
-                else
-                    Log.e("ABC", "run: No RecordingDoneCallback set.");
-            }
+            else
+                stopRecording();
 
         }
     }

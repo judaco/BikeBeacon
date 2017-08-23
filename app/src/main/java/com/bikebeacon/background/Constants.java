@@ -23,6 +23,10 @@ public final class Constants {
 
     public static final String FCM_RECEIVED_RESPONSE = "com.bikebeacon.GOT_RESPONSE";
 
+
+    public static final String RESPONSE_INPUT = "inputFormat";
+    public static final String RESPONSE_OUTPUT = "outputFormat";
+
     public enum AlertAction {
         ALERT_NEW("newAlert"),
         ALERT_CONVERSATION_RECEIVED("conversationStarted"),
